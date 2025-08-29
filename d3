@@ -1,0 +1,159 @@
+29
+#!/bin/bash
+# Script 29
+
+sum=0
+echo "Non-directory files in current directory:"
+for file in *; do
+    if [ -f "$file" ]; then
+        echo "$file"
+        size=$(stat -c%s "$file")
+        sum=$((sum + size))
+    fi
+done
+echo "Total size of non-directory files: $sum bytes"
+
+---------
+30
+#!/bin/bash
+# Script 30
+
+echo "Files starting with vowels:"
+ls | grep -E '^[aeiouAEIOU]'
+----------
+
+31
+#!/bin/bash
+# Script 31
+
+bar1=$1
+bar2=$2
+
+if [ ! -d "$bar1" ] || [ ! -d "$bar2" ]; then
+    echo "Usage: $0 dir1 dir2"
+    exit 1
+fi
+
+for file in "$bar1"/*; do
+    fname=$(basename "$file")
+    if [ -f "$bar2/$fname" ]; then
+        rm "$bar2/$fname"
+        echo "Deleted $bar2/$fname"
+    fi
+done
+
+------------
+32
+
+#!/bin/bash
+# Script 32
+
+echo -n "Enter directory name: "
+read dir
+
+if [ ! -d "$dir" ]; then
+    echo "Invalid directory"
+    exit 1
+fi
+
+curr_count=$(ls -1 | wc -l)
+dir_count=$(ls -1 "$dir" | wc -l)
+
+echo "Current directory has $curr_count files"
+echo "$dir has $dir_count files"
+
+if [ $curr_count -gt $dir_count ]; then
+    diff=$((curr_count - dir_count))
+    echo "Current directory has $diff more files"
+elif [ $dir_count -gt $curr_count ]; then
+    diff=$((dir_count - curr_count))
+    echo "$dir has $diff more files"
+else
+    echo "Both have equal number of files"
+fi
+
+------------
+35
+
+#!/bin/bash
+# Script 35
+
+cat "$1" "$2" > concat.txt
+echo "Concatenated into concat.txt"
+wc concat.txt
+
+-------------
+
+36
+#!/bin/bash
+# Script 36
+
+if cmp -s "$1" "$2"; then
+    echo "Files are duplicate. Deleting $2"
+    rm "$2"
+else
+    cat "$1" "$2" > merged.txt
+    echo "Files merged into merged.txt"
+fi
+
+-----------
+38
+
+#!/bin/bash
+# Script 38
+
+read -p "Enter login name: " user
+line=$(grep "^$user:" /etc/passwd)
+
+if [ -z "$line" ]; then
+    echo "User not found"
+    exit 1
+fi
+
+IFS=":" read uname passwd uid gid fullname home shell <<< "$line"
+
+echo "User Information:"
+echo "Username : $uname"
+echo "User ID  : $uid"
+echo "Group ID : $gid"
+echo "Full Name: $fullname"
+echo "Home Dir : $home"
+echo "Shell    : $shell"
+
+
+----------
+39
+
+#!/bin/bash
+# Script 39
+
+PASSWORD="admin123"
+attempts=0
+
+while [ $attempts -lt 3 ]; do
+    read -sp "Enter password: " pass
+    echo
+    if [ "$pass" == "$PASSWORD" ]; then
+        echo "Access Granted!"
+        while true; do
+            echo "Menu:"
+            echo "1. Number of users logged in"
+            echo "2. Calendar of current month"
+            echo "3. Current date (dd/mm/yyyy)"
+            echo "4. Exit"
+            read -p "Enter choice: " ch
+            case $ch in
+                1) who | wc -l ;;
+                2) cal ;;
+                3) date +"%d/%m/%Y" ;;
+                4) exit 0 ;;
+                *) echo "Invalid choice" ;;
+            esac
+        done
+    else
+        echo "Wrong password!"
+        attempts=$((attempts + 1))
+    fi
+done
+
+echo "Access Denied!"
